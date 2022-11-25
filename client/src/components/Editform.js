@@ -1,36 +1,38 @@
 import {ImCross} from 'react-icons/im';
 import {FaCheck} from 'react-icons/fa';
 import { useState } from 'react';
-import axios from 'axios';
+import axios from "axios";
 
-function Postform({setShowModal, setPosts, posts, setCount}) {
+function Editform({setShowModal, setPosts, posts, editPost, setCount}) {
 
-    const [name, setName] = useState("");
-    const [location, setLocation] = useState("");
-    const [imageLink, setImageLink] = useState("");
-    const [title, setTitle] = useState("");
-    const [caption, setCaption] = useState("");
-    const [postType, setPostType] = useState("image");
+    const [name, setName] = useState(editPost.name);
+    const [location, setLocation] = useState(editPost.location);
+    const [imageLink, setImageLink] = useState(editPost.image);
+    const [title, setTitle] = useState(editPost.title);
+    const [caption, setCaption] = useState(editPost.caption);
+    const [postType, setPostType] = useState(editPost.postType);
 
     const handleSubmit = () => {
-        let temp = {name: name, location, image: imageLink, title, caption, postType};
-
-        axios.post("http://localhost:9000/posts", temp)
+        let temp = { name: name, location, image: imageLink, title, caption, postType};
+        
+        axios.put(`http://localhost:9000/posts/${editPost._id}`, temp)
         .then((response) => {
             console.log(response);
-            if(response.status == 400) {
-                alert("Post creation failed");
+            if(response.status == 401) {
+                alert("Post edit failed");
             } else {
-                alert("Post creation success");
+                alert("Post edit success");
             }
             setCount((p) => p+1);
             setShowModal(false);
         })
         .catch((err) => {
             console.log(err);
-            alert("Post creation failed");
+            alert("Post edit failed");
             setShowModal(false);
         })
+
+        setShowModal(false);
 
     }
 
@@ -38,7 +40,7 @@ function Postform({setShowModal, setPosts, posts, setCount}) {
         <div className="backdrop">
             <div className="form">
                 <div className="formtitlecard">
-                    <p id="formtitle">Add New Posts</p>
+                    <p id="formtitle">Edit Post</p>
                 </div>
                 <div className="formFont">
                     Username:
@@ -97,7 +99,7 @@ function Postform({setShowModal, setPosts, posts, setCount}) {
         </div>
     )
 }
-export default Postform;
+export default Editform;
 
 {/* <div className="formFont">
     Title:

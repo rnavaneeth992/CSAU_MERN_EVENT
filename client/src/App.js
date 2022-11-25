@@ -4,34 +4,34 @@ import Navbar from './components/Navbar';
 import Card from './components/Card/Card';
 import TextCard from './components/Card/TextCard';
 import Postform from './components/Postform';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { data } from './data';
+import axios from 'axios';
+import Editform from './components/Editform';
 
 const App = () => {
 
   const [posts, setPosts] = useState(data);
 
   const [showModal, setShowModal] = useState(false);
+  const [formType, setFormType] = useState("add");
+  const [editPost, setEditPost] = useState(null);
+  const [count, setCount] = useState(0);
 
-  // var a = 10;
-  // console.log(a);
-
-  // let a;
-  // a= 10;
-  // const b = 10;
-
-  // const sample = (a, b) =>  a + b;
-  // console.log(sample(1,2));
-
-  // let obj = { a: 1, b: 2 };
-  // let { a: var1, b: var2 } = obj;
-
-  // console.log(var1, var2)
-
-  // let arr = [1, 2];
-  // let [a, b] = arr;
-
-  // console.log(a, b)
+  useEffect(() => {
+    axios.get("http://localhost:9000/posts")
+    .then((response) => {
+      if(response.status == 200) {
+        setPosts(response.data);
+      } else {
+        alert("error getting posts");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      alert("error getting posts");
+    })
+  }, [count]);
 
   return (
     <>
@@ -42,9 +42,9 @@ const App = () => {
           {
             posts.map((elem) => {
               if(elem.postType == 'image') {
-                return <Card details={elem} />
+                return <Card setCount={setCount} setEditPost={setEditPost} setShowModal={setShowModal} setFormType={setFormType} details={elem} />
               }
-              return <TextCard details={elem}  />
+              return <TextCard setCount={setCount} setEditPost={setEditPost} setShowModal={setShowModal} setFormType={setFormType} details={elem}  />
             })
           }
           {/* <Card name="Gautham" location="CEG" />
@@ -56,9 +56,16 @@ const App = () => {
       </div>
     </div>
     {
-      showModal 
+      formType==="add" && showModal 
       ? 
-        <Postform setShowModal={setShowModal} setPosts={setPosts} posts={posts} />
+        <Postform setCount={setCount} setShowModal={setShowModal} setPosts={setPosts} posts={posts} />
+      :
+      <></>
+    }
+    {
+      formType==="edit" && showModal 
+      ? 
+        <Editform setCount={setCount} editPost={editPost} setShowModal={setShowModal} setPosts={setPosts} posts={posts} />
       :
       <></>
     }

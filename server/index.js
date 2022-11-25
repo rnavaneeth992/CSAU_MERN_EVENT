@@ -1,6 +1,6 @@
 const express = require('express');
-
 const app = express();
+const cors = require("cors");
 
 // const { posts } = require('./database/posts.js');
 
@@ -10,6 +10,7 @@ const Post = require('./model')
 
 // MIDDLEWARES
 app.use(express.json());
+app.use(cors());
 
 mongoose.connect("mongodb://127.0.0.1:27017/csaudb",{
     useNewUrlParser: true,
@@ -19,7 +20,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/csaudb",{
     console.log("Mongodb connected");
 
     //create
-    app.post("/posts/", (req,res)=>{
+    app.post("/posts", (req,res)=>{
         const post = new Post(req.body);
         try{
             console.log("New post has been created");
@@ -34,9 +35,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/csaudb",{
     })
 
     //read
-    app.get("/posts/",async (req,res) => {
+    app.get("/posts",async (req,res) => {
         try{
-            console.log("before");
             const posts = await Post.find({});
             // console.log(posts);
             res.json(posts);
